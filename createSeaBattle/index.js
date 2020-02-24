@@ -1,11 +1,14 @@
 
-const db = require('../db');
+// const db = require('../db');
+const app = require('../app');
+
+const statistic = app.statistic;
 
 async function createSeaBattle () {
-   const battleFields = await db.getBattleField();
-   const statistic = await db.getStatistic();
+   // const battleFields = await db.getBattleField();
+   
 
-   /* let battleFields = [
+    let battleFields = [
       [1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
@@ -17,7 +20,7 @@ async function createSeaBattle () {
       [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
       [0, 0, 1, 1, 1, 0, 1, 0, 1, 1]
    ];
-   */
+   
    // console.log(battleFields);
 
    // const shipAmound = statistic.shipAmound;
@@ -214,3 +217,4 @@ async function createSeaBattle () {
 // "Убил": 1
 
 module.exports = createSeaBattle;
+exports.statistic = statistic;
