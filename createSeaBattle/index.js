@@ -57,37 +57,145 @@ async function createSeaBattle () {
          }
 
          check(y, x);
-
+         function onBF(y,x){
+            if(y > battleFields.length - 1 || x > battleFields.length - 1 || y < 0 || x < 0){
+               return 0;
+            }else
+            return battleFields[y][x];
+         }
          if (battleFields[y][x] === 0) {
             result = -1;
          } else if (battleFields[y][x] === 1) {
             hit(y, x);
-            const start = (n) => (n === 0) ? n : n - 1;
-            const end = (n) => (n === battleFields.length - 1) ? n : n + 1;
-
-            for (let a = start(y); a <= end(y); a++) {
-               for (let b = start(x); b <= end(x); b++) {
-                  
-                  if (a === y && b === x) {
-                     continue;
-                  }
-                  
-                  if (battleFields[a][b] === 0){
+            const start = (n) => n - 1;
+            const end = (n) => n + 1;
+            const min = (n) =>  n - 3;
+            const max = (n) =>  n + 3;
+            function checkAround(){
+               function checker(y,x){
+                  if (battleFields[y][x] === 1){
+                     if(statistic.hit.includes(`${y},${x}`)) {
+                        result = 1;
+                        continue;
+                     }else{
+                        result = 0;
+                        break;
+                     }
+                  }else {
                      result = 1;
-                     continue;
-                  }
-                  console.log('AROUND: ' + JSON.stringify([a,b]));
-                  if (statistic.hit.includes(`${a},${b}`)) {
-
-                     result = 1;
-                     continue;
-                  }else{
-                     result = 0;
-                     console.log(`intact: ${a},${b}`)
-                     //break;
+                     break;
                   }
                }
+               if(onBF(y - 1,x) === 1 || onBF(y + 1,x) === 1){
+                  console.log(`UP`);
+                  for (let v = start(y); v >= min(y); v--){
+                     console.log(`UP: ${v},${x}`);
+                     if (battleFields[v][x] === 1){
+                        if(statistic.hit.includes(`${v},${x}`)) {
+                           console.log('kill 1');
+                           result = 1;
+                           continue;
+                        }else{
+                           console.log('hit 1');
+                           result = 0;
+                           break;
+                        }
+                     }else {
+                        console.log('kill 2');
+                        result = 1;
+                        break;
+                     }
+                  }
+                  if (result === 1){
+                     console.log(`DOWN`);
+                     for (let v = end(y); v <= max(y); v++){
+                        console.log(`DOWN: ${v},${x}`);
+                        if (battleFields[v][x] === 1){
+                           if(statistic.hit.includes(`${v},${x}`)) {
+                              console.log('kill 3');
+                              result = 1;
+                              continue;
+                           }else{
+                              console.log('hit 2');
+                              result = 0;
+                              break;
+                           }
+                        }else {
+                           console.log('kill 4');
+                           result = 1;
+                           break;
+                        }
+                     }
+                  }
+               }else if(onBF(y,x - 1) === 1 || onBF(y,x + 1) === 1){
+                  console.log(`LEFT`);
+                  for (let v = start(x); v >= min(x); v--){
+                     console.log(`LEFT:  ${y},${v}`);
+                     if (battleFields[y][v] === 1){
+                        if(statistic.hit.includes(`${y},${v}`)) {
+                           console.log('kill 5');
+                           result = 1;
+                           continue;
+                        }else{
+                           console.log('hit 3');
+                           result = 0;
+                           break;
+                        }
+                     }else {
+                        console.log('kill 6');
+                        result = 1;
+                        break;
+                     }
+                  }
+                  if (result === 1){
+                  console.log(`RIGHT`);
+                     for (let v = end(x); v <= max(x); v++){
+                        console.log(`RIGHT:  ${y},${v}`);
+                        if (battleFields[y][v] === 1){
+                           if(statistic.hit.includes(`${y},${v}`)) {
+                              console.log('kill 7');
+                              result = 1;
+                              continue;
+                           }else{
+                              console.log('hit 4');
+                              result = 0;
+                              break;
+                           }
+                        }else {
+                           console.log('kill 8');
+                           result = 1;
+                           break;
+                        }
+                     }
+                  }
+               }else{
+                  console.log('kill 9');
+                  result = 1;
+               }
+
             }
+            // for (let a = start(y); a <= end(y); a++) {
+            //    for (let b = start(x); b <= end(x); b++) {
+            //       if (a === y && b === x) {
+            //          continue;
+            //       }
+            //       if (battleFields[a][b] === 0||statistic.hit.includes(`${a},${b}`)){
+            //          result = 1;
+            //          continue;
+            //       // }
+            //       // console.log('AROUND: ' + JSON.stringify([a,b]));
+            //       // if (statistic.hit.includes(`${a},${b}`)) {
+
+            //       //    result = 1;
+            //       //    continue;
+            //       }else{
+            //          result = 0;
+            //          console.log(`intact: ${a},${b}`)
+            //          //break;
+            //       }
+            //    }
+            // }
+            checkAround();
             if (result === 1) {
                kill();
             }

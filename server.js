@@ -3,6 +3,8 @@ const express = require('express');
 const createSeaBattle = require('./createSeaBattle');
 const bodyParser = require('body-parser');
 const fs = require("fs");
+const hbs = require("hbs");
+const db = require('./db');
 const app = express();
 const port = 3000;
 
@@ -35,7 +37,7 @@ app.post("/ajax", jsonParser, function (request, response) {
    let x = Number.parseInt(request.body.x);
    console.log()
    
-   fs.appendFile("/ajaxBattle.html", shot(y,x))
+
    response.send(shot(y,x));
 });
  
@@ -43,6 +45,34 @@ app.get("/ajax", function(request, response){
      
    response.sendFile(__dirname + "/ajaxBattle.html");
 });
+
+hbs.registerHelper("getTime", function(){
+     
+   var myDate = new Date();
+   var hour = myDate.getHours();
+   var minute = myDate.getMinutes();
+   var second = myDate.getSeconds();
+   if (minute < 10) {
+       minute = "0" + minute;
+   }
+   if (second < 10) {
+       second = "0" + second;
+   }
+   return "Текущее время: " + hour + ":" + minute + ":" + second;
+});
+hbs.registerHelper("getStat", function(){
+   JSON.stringify(db.getStatistic ());
+});
+
+app.use("/game", function(request, response){
+     
+   response.render("game.hbs",{
+    
+   });
+});
+
+
+
 
 app.get('/', function (request, response) {
    //response.send('Hello World!')
@@ -65,6 +95,5 @@ async function shot (y, x) {
       return 'miss';
    };
 }
-// shot(5,6)
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

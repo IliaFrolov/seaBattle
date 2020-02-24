@@ -49,7 +49,7 @@ async function getStatistic () {
    console.log('got stat');
    return statistic;
 }
-
+let stat  = getStatistic ();
 async function updateStatistic (obj) {
    const resp = await Statistics.updateOne(obj);
    console.log('updated stat');
@@ -74,3 +74,4 @@ newGame ()
 exports.getBattleField = getBattleField;
 exports.getStatistic = getStatistic;
 exports.updateStatistic = updateStatistic;
+exports.stat = stat;

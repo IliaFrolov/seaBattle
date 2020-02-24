@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,13 +8,15 @@
 <body>
     <h1>Enter coordinates</h1>
     <form action="/ajax" method="post" name="seaBattle">
-      <label>Y</label><br>
-      <input type="number" name="y" /><br><br>
         <label>X</label><br>
         <input type="number" name="x" /><br><br>
-       
+        <label>Y</label><br>
+        <input type="number" name="y" /><br><br>
         <input type="submit" id ="submit" value="Shot" />
         <button type="button" id ="new">New game</button>
+        <div>{{getStat}}</div>
+        <div>{{getTime}}</div>
+    </form>
     </form>
     <script>
     document.getElementById("submit").addEventListener("click", function (e) {
@@ -26,7 +29,7 @@
      let shot = JSON.stringify({y: y, x: x});
      let request = new XMLHttpRequest();
      // посылаем запрос на адрес "/user"
-      request.open("POST", "/ajax", true);   
+      request.open("POST", "/game", true);   
       request.setRequestHeader("Content-Type", "application/json");
       request.addEventListener("load", function () {
          // получаем и парсим ответ сервера
