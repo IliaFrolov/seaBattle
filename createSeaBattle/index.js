@@ -2,12 +2,16 @@
 // const db = require('../db');
 const app = require('../app');
 
-const statistic = app.statistic;
+// const statistic = app.stat;
 
 async function createSeaBattle () {
    // const battleFields = await db.getBattleField();
+   const statistic = await app.getStat();
+   // let statistic = app.getStat((stat)=>stat );
    
 
+   console.log(`CBF.stat`)
+   console.log(statistic)
     let battleFields = [
       [1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -28,23 +32,25 @@ async function createSeaBattle () {
    // const checked = statistic.checked;
    // let killed = statistic.killed;
 
-   async function hit (y, x) {
+   function hit (y, x) {
       statistic.hit.push(`${y},${x}`);
    }
-   async function check (y, x) {
+   function check (y, x) {
       statistic.checked.push(`${y},${x}`);
    }
-   async function kill () {
+   function kill () {
       statistic.killed += 1;
    }
-
+   function addResult () {
+      statistic.history.push(`User shot y:${y}, x:${x}. Result: ${result}`);
+   }
    function endGame () {
       return (statistic.killed >= statistic.shipAmound);
    }
-
+let result;
    return (y) => {
       return (x) => {
-         let result;
+         
          console.log('TARGET: ' + [y, x]);
          if (endGame()) {
             throw new Error('Game over, no ships was left');
@@ -75,20 +81,20 @@ async function createSeaBattle () {
             const min = (n) =>  n - 3;
             const max = (n) =>  n + 3;
             function checkAround(){
-               function checker(y,x){
-                  if (battleFields[y][x] === 1){
-                     if(statistic.hit.includes(`${y},${x}`)) {
-                        result = 1;
-                        continue;
-                     }else{
-                        result = 0;
-                        break;
-                     }
-                  }else {
-                     result = 1;
-                     break;
-                  }
-               }
+               // function checker(y,x){
+               //    if (battleFields[y][x] === 1){
+               //       if(statistic.hit.includes(`${y},${x}`)) {
+               //          result = 1;
+               //          continue;
+               //       }else{
+               //          result = 0;
+               //          break;
+               //       }
+               //    }else {
+               //       result = 1;
+               //       break;
+               //    }
+               // }
                if(onBF(y - 1,x) === 1 || onBF(y + 1,x) === 1){
                   console.log(`UP`);
                   for (let v = start(y); v >= min(y); v--){
@@ -207,7 +213,9 @@ async function createSeaBattle () {
          console.log('HIT: ' + JSON.stringify(statistic.hit));
          console.log('KILLED: ' + JSON.stringify(statistic.killed));
          //console.log(result);
-         db.updateStatistic(statistic);
+         
+         addResult()
+         // app.updateStatistic(statistic);
          return result;
       };
    };
@@ -216,5 +224,5 @@ async function createSeaBattle () {
 // "Ранил": 0,
 // "Убил": 1
 
-module.exports = createSeaBattle;
+exports.createSeaBattle = createSeaBattle;
 exports.statistic = statistic;

@@ -52,6 +52,7 @@ const statistic = new Statistics({ name: 'statistic', killed: 0, shipAmound: 10 
 //    return statistic;
 // }
 // let stat  = getStatistic ();
+
 // async function updateStatistic (obj) {
 //    const resp = await Statistics.updateOne(obj);
 //    console.log('updated stat');
