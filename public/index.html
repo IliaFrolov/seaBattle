@@ -19,15 +19,16 @@
         <input type="hidden" name="id" value="0" />
         <div class="form-group">
             <label for="name">Y:</label>
-            <input class="form-control" name="y" />
+            <input class="form-control" name="y" type="number"/>
         </div>
         <div class="form-group">
             <label for="age">X:</label>
-            <input class="form-control" name="x" />
+            <input class="form-control" name="x" type="number"/>
         </div>
         <div class="panel-body">
             <button type="submit" class="btn btn-sm btn-primary">shot</button>
             <a id="new-game" class="btn btn-sm btn-primary ">new game</a>
+            <a id="clear-results" class="btn btn-sm btn-primary ">clear results</a>
         </div>
     </form>
     <table class="table table-condensed table-striped table-bordered">
@@ -37,164 +38,94 @@
     </table>
   
     <script>
-        // Получение всех пользователей
-        function GetUsers() {
+        function GetStat() {
             $.ajax({
-                url: "/api/users",
-                cache: false, // If set to false, it will force requested pages not to be cached by the browser
+                url: "/api",
+                cache: false, 
                 type: "GET",
                 contentType: "application/json",
                 success: function (stat) {
-                  console.log(stat)
 
-                    let rows = "";
 
-                     //   rows = JSON.stringify(stat);
-                     //   $.each(stat, function (index, user) {
-                     //       // добавляем полученные элементы в таблицу
-                     //       rows += row(user);
-                     //   })
-
-                     //for (let a = 0; a >= stat[0].checked.length - 1; a++){
-                        //console.log(stat[0].checked[a]);
-                     // let yx = Array.of(stat[0].checked[a]);
-                     // let res = stat[0].result[a];
-                     // console.log(yx);
-                     // rows += row(yx[0], yx[1], res);
+                  let rows = "";
+                  let history = stat.history;
+                  console.log(history)
+                       $.each(history, function (index, elem) {
+                           rows += row(elem);
+                       })
+                     $("table tbody").append(rows);
                      
-                     // $("table tbody").append(rows);
-                     //}
                  }
             });
         }
-        // Получение одного пользователя
-        function GetUser(id) {
+
+        function Shot(y, x) {
             $.ajax({
-                url: "/api/users/"+id,
-                type: "GET",
+                url: "/api",
+                cache: false,
                 contentType: "application/json",
-                success: function (user) {
-                    var form = document.forms["userForm"];
-                    form.elements["id"].value = user._id;
-                    form.elements["name"].value = user.name;
-                    form.elements["age"].value = user.age;
-                }
-            });
-        }
-        // Добавление пользователя
-        function CreateUser(y, x) {
-            $.ajax({
-                url: "api/users",
-                contentType: "application/json",
-                method: "POST",
+                method: "PUT",
                 data: JSON.stringify({
                     y: y,
                     x: x
                 }),
-                success: function (res) {
-                  //   reset();
+                success: function (stat) {
+                  reset();
                   var rows = "";
-                  rows += row(`User shot y:${y}, x:${x}. Result: ${res}`) ;
+                  rows += row(stat.history[stat.history.length-1]) ;
+                    $("table tbody").append(rows);
+                }
+            })
+        }
+
+
+        function newGame() {
+            $.ajax({
+                url: "/api",
+                contentType: "application/json",
+                method: "DELETE",
+                success: function (res) {
+                     console.log(res);
+                     var rows = "";
+                     rows += row('New game') ;
                     
                     $("table tbody").append(rows);
-                    //alert(`${userName},${userAge}: ${user}`)
                 }
             })
         }
-        // Изменение пользователя
-        function EditUser(userId, userName, userAge) {
-            $.ajax({
-                url: "api/users",
-                contentType: "application/json",
-                method: "PUT",
-                data: JSON.stringify({
-                    id: userId,
-                    name: userName,
-                    age: userAge
-                }),
-                success: function (user) {
-                    reset();
-                    console.log(user);
-                    $("tr[data-rowid='" + user._id + "']").replaceWith(row(user));
-                }
-            })
+
+        var row = function (message) {
+            return "<tr><td>"+ message + "</td>" +
+                   "</tr>";
         }
-  
-        // сброс формы
         function reset() {
             var form = document.forms["userForm"];
             form.reset();
             form.elements["id"].value = 0;
         }
-  
-        // Удаление пользователя
-      //   function DeleteUser(id) {
-      //       $.ajax({
-      //           url: "api/users/"+id,
-      //           contentType: "application/json",
-      //           method: "DELETE",
-      //           success: function (user) {
-      //               console.log(user);
-      //               $("tr[data-rowid='" + user._id + "']").remove();
-      //           }
-      //       })
-      //   }
-        // Удаление stat
-        function newGame() {
-            $.ajax({
-                url: "api/users/",
-                contentType: "application/json",
-                method: "DELETE",
-                success: function (res) {
-                    console.log(res);
-                    var rows = "";
-                  rows += row('New game') ;
-                    
-                    $("table tbody").append(rows);
-                }
-            })
+        function clearStat(){
+         $("tbody > tr").remove();
         }
-        // создание строки для таблицы
-        var row = function (message) {
-            return "<tr><td>"+ message + "</td>" +
-                   "</tr>";
-        }
-        // сброс значений формы
-        $("#reset").click(function (e) {
-  
-            e.preventDefault();
-            reset();
-        })
+
         $("#new-game").click(function (e) {
-         
-         e.preventDefault();
-         newGame();
+            e.preventDefault();
+            newGame();
          })
-        // отправка формы
+
+         $("#clear-results").click(function (e) {
+            e.preventDefault();
+            clearStat();
+         })
+
         $("form").submit(function (e) {
             e.preventDefault();
             const y = this.elements["y"].value;
             const x = this.elements["x"].value;
 
-            CreateUser(y, x);
-           
+            Shot(y, x);
         });
-  
-        // нажимаем на ссылку Изменить
-        $("body").on("click", ".editLink", function () {
-            var id = $(this).data("id");
-            GetUser(id);
-        })
 
-        
-        // нажимаем на ссылку Удалить
-        $("body").on("click", ".removeLink", function () {
-            var id = $(this).data("id");
-            DeleteUser(id);
-        })
-
-        // загрузка пользователей
-        GetUsers();
+        GetStat();
     </script>
 </body>
 </html>

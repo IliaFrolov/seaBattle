@@ -1,18 +1,7 @@
 
 // const db = require('../db');
 const app = require('../app');
-
-// const statistic = app.stat;
-
-async function createSeaBattle () {
-   // const battleFields = await db.getBattleField();
-   const statistic = await app.getStat();
-   // let statistic = app.getStat((stat)=>stat );
-   
-
-   console.log(`CBF.stat`)
-   console.log(statistic)
-    let battleFields = [
+let battleFields = [
       [1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
@@ -24,13 +13,21 @@ async function createSeaBattle () {
       [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
       [0, 0, 1, 1, 1, 0, 1, 0, 1, 1]
    ];
-   
-   // console.log(battleFields);
+// const statistic = {
+//    "hit": [],
+//    "checked": [],
+//    "history": [],
+//    "name": "statistic",
+//    "killed": 0,
+//    "shipAmound":10,
+// }
 
-   // const shipAmound = statistic.shipAmound;
-   // const hitArr = statistic.hit;
-   // const checked = statistic.checked;
-   // let killed = statistic.killed;
+
+// const statistic = await app.getStat();
+
+async function createSeaBattle () {
+
+   let statistic = await app.getStat();
 
    function hit (y, x) {
       statistic.hit.push(`${y},${x}`);
@@ -41,25 +38,29 @@ async function createSeaBattle () {
    function kill () {
       statistic.killed += 1;
    }
-   function addResult () {
-      statistic.history.push(`User shot y:${y}, x:${x}. Result: ${result}`);
+   function addResult (result) {
+      statistic.history.push(result);
    }
    function endGame () {
       return (statistic.killed >= statistic.shipAmound);
    }
-let result;
+   let result;
+
    return (y) => {
       return (x) => {
-         
+         try{
          console.log('TARGET: ' + [y, x]);
          if (endGame()) {
             throw new Error('Game over, no ships was left');
          }
+         if (!y || !x) {
+            throw new Error('Error! Please enter coordinats');
+         }
          if (typeof x !== 'number' || typeof y !== 'number') {
-            throw new Error('You have enter wrong value, enter number');
+            throw new Error('Error! You have enter wrong coordinats, please enter number');
          }
          if (y > battleFields.length - 1 || x > battleFields[0].length - 1 || y < 0 || x < 0) {
-            throw new Error(`You have enter wrong number, enter 0-${battleFields[0].length - 1}`);
+            throw new Error(`Error! You have enter wrong number, enter 0-${battleFields[0].length - 1}`);
          }
          if (statistic.checked.includes(`${y},${x}`)) {
             throw new Error('You have already shooted in this cell');
@@ -97,7 +98,7 @@ let result;
                // }
                if(onBF(y - 1,x) === 1 || onBF(y + 1,x) === 1){
                   console.log(`UP`);
-                  for (let v = start(y); v >= min(y); v--){
+                  for (let v = start(y); v >=0; v--){
                      console.log(`UP: ${v},${x}`);
                      if (battleFields[v][x] === 1){
                         if(statistic.hit.includes(`${v},${x}`)) {
@@ -117,8 +118,9 @@ let result;
                   }
                   if (result === 1){
                      console.log(`DOWN`);
-                     for (let v = end(y); v <= max(y); v++){
+                     for (let v = end(y); v <= battleFields.length - 1; v++){
                         console.log(`DOWN: ${v},${x}`);
+                        
                         if (battleFields[v][x] === 1){
                            if(statistic.hit.includes(`${v},${x}`)) {
                               console.log('kill 3');
@@ -138,7 +140,7 @@ let result;
                   }
                }else if(onBF(y,x - 1) === 1 || onBF(y,x + 1) === 1){
                   console.log(`LEFT`);
-                  for (let v = start(x); v >= min(x); v--){
+                  for (let v = start(x); v >= 0; v--){
                      console.log(`LEFT:  ${y},${v}`);
                      if (battleFields[y][v] === 1){
                         if(statistic.hit.includes(`${y},${v}`)) {
@@ -158,7 +160,7 @@ let result;
                   }
                   if (result === 1){
                   console.log(`RIGHT`);
-                     for (let v = end(x); v <= max(x); v++){
+                     for (let v = end(x); v <= battleFields.length - 1; v++){
                         console.log(`RIGHT:  ${y},${v}`);
                         if (battleFields[y][v] === 1){
                            if(statistic.hit.includes(`${y},${v}`)) {
@@ -183,27 +185,6 @@ let result;
                }
 
             }
-            // for (let a = start(y); a <= end(y); a++) {
-            //    for (let b = start(x); b <= end(x); b++) {
-            //       if (a === y && b === x) {
-            //          continue;
-            //       }
-            //       if (battleFields[a][b] === 0||statistic.hit.includes(`${a},${b}`)){
-            //          result = 1;
-            //          continue;
-            //       // }
-            //       // console.log('AROUND: ' + JSON.stringify([a,b]));
-            //       // if (statistic.hit.includes(`${a},${b}`)) {
-
-            //       //    result = 1;
-            //       //    continue;
-            //       }else{
-            //          result = 0;
-            //          console.log(`intact: ${a},${b}`)
-            //          //break;
-            //       }
-            //    }
-            // }
             checkAround();
             if (result === 1) {
                kill();
@@ -214,9 +195,18 @@ let result;
          console.log('KILLED: ' + JSON.stringify(statistic.killed));
          //console.log(result);
          
-         addResult()
-         // app.updateStatistic(statistic);
+         addResult(`User shot y:${y}, x:${x}. Result: ${result}`)
+         app.updateStat(statistic);
          return result;
+
+         }catch(err){
+            addResult(err.message);
+            return err;
+
+         }finally{
+            app.updateStat(statistic);
+         }
+
       };
    };
 }
@@ -225,4 +215,4 @@ let result;
 // "Убил": 1
 
 exports.createSeaBattle = createSeaBattle;
-exports.statistic = statistic;
+// exports.statistic = statistic;
