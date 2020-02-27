@@ -20,10 +20,10 @@ const Statistics = mongoose.model('Statistics', statisticSchema);
 const statistic = new Statistics({_id: 1, name: 'statistic', killed: 0, shipAmound: 10 });
 
 app.use(express.static(__dirname + "/public"));
-
+const PORT = process.env.PORT || 3000;
 mongoose.connect("mongodb+srv://app-user:N9gwc7b9DiXkjSR@ilia-cluster0-rdyya.mongodb.net/seaBattle?retryWrites=true&w=majority", { useNewUrlParser: true }, function(err){
     if(err) return console.log(err);
-    app.listen(3000, function(){
+    app.listen(PORT, function(){
         console.log("Сервер ожидает подключения...");
     });
 });
