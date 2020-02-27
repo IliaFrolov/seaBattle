@@ -16,15 +16,24 @@
           height: 50px;
           margin: 1px;
        }
+       .ctrl-btn{
+         width: 98px;
+          height: 50px;
+          margin: 1px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 0;
+       }
     </style>
 </head>
 <body>
    <h2>Sea battle</h2>
       <div class="d-flex flex-row">
          <div class="Field w-50">
-            <div class="d-flex flex-row justify-content-around">
-               <a id="new-game" class="btn btn-sm btn-primary ">new game</a>
-               <a id="clear-results" class="btn btn-sm btn-primary ">clear results</a>
+            <div class="d-flex flex-row justify-start">
+               <a id="new-game" class="btn btn-sm btn-primary ctrl-btn">new game</a>
+               <a id="clear-results" class="btn btn-sm btn-primary ctrl-btn">clear results</a>
             </div>
          </div>
          
@@ -77,16 +86,12 @@
                 type: "GET",
                 contentType: "application/json",
                 success: function (stat) {
-
-
                   let rows = "";
-                  let history = stat.history;
-                  console.log(history)
-                       $.each(history, function (index, elem) {
+                  console.log(stat.history)
+                       $.each(stat.history, function (index, elem) {
                            rows += row(elem);
                        })
                      $("table tbody").append(rows);
-                     
                  }
             });
         }
@@ -104,7 +109,9 @@
                 success: function (stat) {
                   // reset();
                   var rows = "";
+                  console.log(stat.history)
                   rows += row(stat.history[stat.history.length-1]) ;
+
                     $("table tbody").append(rows);
                 }
             })

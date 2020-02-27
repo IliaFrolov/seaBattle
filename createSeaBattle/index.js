@@ -98,7 +98,7 @@ async function createSeaBattle () {
                // }
                if(onBF(y - 1,x) === 1 || onBF(y + 1,x) === 1){
                   console.log(`UP`);
-                  for (let v = start(y); v >=0; v--){
+                  for (let v = start(y); ; v--){
                      console.log(`UP: ${v},${x}`);
                      if (battleFields[v][x] === 1){
                         if(statistic.hit.includes(`${v},${x}`)) {
@@ -118,7 +118,7 @@ async function createSeaBattle () {
                   }
                   if (result === 1){
                      console.log(`DOWN`);
-                     for (let v = end(y); v <= battleFields.length - 1; v++){
+                     for (let v = end(y); ; v++){
                         console.log(`DOWN: ${v},${x}`);
                         
                         if (battleFields[v][x] === 1){
@@ -140,9 +140,9 @@ async function createSeaBattle () {
                   }
                }else if(onBF(y,x - 1) === 1 || onBF(y,x + 1) === 1){
                   console.log(`LEFT`);
-                  for (let v = start(x); v >= 0; v--){
+                  for (let v = start(x); ; v--){
                      console.log(`LEFT:  ${y},${v}`);
-                     if (!v)
+                     console.log(battleFields[y][v])
                      if (battleFields[y][v] === 1){
                         if(statistic.hit.includes(`${y},${v}`)) {
                            console.log('kill 5');
@@ -191,22 +191,23 @@ async function createSeaBattle () {
                kill();
             }
          }
-         console.log('CHECKED: ' + JSON.stringify(statistic.checked));
-         console.log('HIT: ' + JSON.stringify(statistic.hit));
-         console.log('KILLED: ' + JSON.stringify(statistic.killed));
-         //console.log(result);
+         // console.log('CHECKED: ' + JSON.stringify(statistic.checked));
+         // console.log('HIT: ' + JSON.stringify(statistic.hit));
+         // console.log('KILLED: ' + JSON.stringify(statistic.killed));
+         console.log(result);
          
          addResult(`User shot y:${y}, x:${x}. Result: ${result}`)
          app.updateStat(statistic);
-         return result;
+         
 
          }catch(err){
             addResult(err.message);
-            console.log(err)
-            return err;
+            console.log(err.message)
+            return err.message;
             
          }finally{
-            app.updateStat(statistic);
+           return statistic;
+             
          }
 
       };

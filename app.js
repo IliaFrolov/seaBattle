@@ -41,10 +41,20 @@ app.put("/api", jsonParser, async function (req, res) {
    const x = Number.parseInt(req.body.x);
    
    const shot = await createSeaBattle.createSeaBattle();
-   shot(y)(x);
+   result = shot(y)(x)
+   stat = await updateStat(result)
+   
+   // console.log(stat)
+   res.send(result)   
+});
 
-   stat = await getStat()
-   res.send(stat)   
+app.delete("/api", function(req, res){
+
+   Statistics.replaceOne({_id: 1}, statistic, {upsert: false}, function (err, statistic) {
+      if (err) return console.error(err);
+      res.send(statistic);
+   });
+
 });
 
 function start () {
@@ -56,7 +66,6 @@ function start () {
       }
    });
 }
-
 function getStat(){
    return Statistics.findOne({}, function(err, stat){
          if(!err) return stat;
@@ -69,31 +78,6 @@ function updateStat(obj){
       console.log(`up stat`);
    });
 }
-
-
-
-app.delete("/api", function(req, res){
-
-   Statistics.replaceOne({_id: 1}, statistic, {upsert: false}, function (err, statistic) {
-      if (err) return console.error(err);
-      res.send(statistic);
-   });
-
-});
-
-// app.put("/api/users", jsonParser, function(req, res){
-         
-//     if(!req.body) return res.sendStatus(400);
-//     const id = req.body.id;
-//     const userName = req.body.name;
-//     const userAge = req.body.age;
-//     const newUser = {age: userAge, name: userName};
-     
-//     User.findOneAndUpdate({_id: id}, newUser, {new: true}, function(err, user){
-//         if(err) return console.log(err); 
-//         res.send(user);
-//     });
-// });
 
 start();
 
