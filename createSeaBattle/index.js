@@ -53,9 +53,9 @@ async function createSeaBattle () {
          if (endGame()) {
             throw new Error('Game over, no ships was left');
          }
-         if (!y || !x) {
-            throw new Error('Error! Please enter coordinats');
-         }
+         // if (!y || !x) {
+         //    throw new Error('Error! Please enter coordinats');
+         // }
          if (typeof x !== 'number' || typeof y !== 'number') {
             throw new Error('Error! You have enter wrong coordinats, please enter number');
          }
