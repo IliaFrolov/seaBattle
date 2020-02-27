@@ -142,6 +142,7 @@ async function createSeaBattle () {
                   console.log(`LEFT`);
                   for (let v = start(x); v >= 0; v--){
                      console.log(`LEFT:  ${y},${v}`);
+                     if (!v)
                      if (battleFields[y][v] === 1){
                         if(statistic.hit.includes(`${y},${v}`)) {
                            console.log('kill 5');
@@ -201,8 +202,9 @@ async function createSeaBattle () {
 
          }catch(err){
             addResult(err.message);
+            console.log(err)
             return err;
-
+            
          }finally{
             app.updateStat(statistic);
          }
